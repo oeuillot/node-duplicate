@@ -1,0 +1,14 @@
+{
+  "name": "node-duplicate",
+  "version": "0.1.0",
+  "main": "index.js",
+  "dependencies": {
+    "commander": "latest",
+    "async": "latest"
+  },
+  "devDependencies": {
+   },
+  "engines": {
+    "node": ">=0.8.0"
+  }
+}
