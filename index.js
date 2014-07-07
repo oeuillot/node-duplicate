@@ -162,10 +162,10 @@ function proc() {
       if (program.removeAllo) {
         var keep = null;
         files.forEach(function(f) {
-          if (keep) {
-            return;
-          }
           if (f.indexOf("__AF") >= 0 || f.indexOf("__AS") >= 0) {
+            if (keep && keep.length() > f.length()) {
+              return;
+            }
             keep = f;
           }
         });
@@ -175,7 +175,7 @@ function proc() {
             if (f === keep) {
               return;
             }
-            console.log("Remove " + keep);
+            console.log("Remove " + f);
           });
         }
       }
