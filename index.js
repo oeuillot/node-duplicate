@@ -170,7 +170,7 @@ function proc() {
             keep = f;
           }
 
-          if (path.basename(f) != path.basename(files[0])) {
+          if (Path.basename(f) != Path.basename(files[0])) {
             sameName = false;
           }
         });
