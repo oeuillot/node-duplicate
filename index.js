@@ -7,16 +7,23 @@ var Async = require('async');
 var filesRepository = {};
 var filesCount = 0;
 
+var maxHashSize = 1024 * 1024;
+
 var filesSHA1 = Async.queue(function(path, callback) {
   // console.log("SHA1 of " + path);
   var shasum = crypto.createHash('sha256');
+  var max = program.maxHashSize || maxHashSize;
 
+  var count = 0;
   var s = fs.ReadStream(path);
-  s.on('data', function(d) {
-    shasum.update(d);
-  });
+  var closed = false;
 
-  s.on('end', function() {
+  function end() {
+    if (closed) {
+      return;
+    }
+    closed = true;
+
     s.close();
 
     var d = shasum.digest('base64');
@@ -35,8 +42,24 @@ var filesSHA1 = Async.queue(function(path, callback) {
 
       return callback(null);
     });
+  }
+
+  s.on('data', function(d) {
+    if (closed) {
+      return;
+    }
+    count += d.length;
+
+    shasum.update(d);
+
+    if (max > 0 && count > max) {
+      end();
+    }
   });
-}, 4);
+
+  s.on('end', end);
+
+}, 1);
 
 var directories = Async.queue(function(directory, callback) {
 
@@ -58,7 +81,7 @@ var directories = Async.queue(function(directory, callback) {
         }
 
         if (stats.isDirectory()) {
-          console.log("Add directories " + file);
+          // console.log("Add directories " + file);
           directories.push(path);
 
         } else if (stats.isFile() && stats.size) {
@@ -99,6 +122,7 @@ program.option("-d, --directory <path>", "Directory", function(p) {
 
 program.option("-r, --remove", "Remove duplicate file");
 program.option("--removeAllo", "Remove duplicate allopnp file");
+program.option("--maxHashSize", "Specify the max hash size", parseInt);
 
 program.parse(process.argv);
 
