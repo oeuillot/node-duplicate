@@ -163,7 +163,7 @@ function proc() {
         var keep = null;
         files.forEach(function(f) {
           if (f.indexOf("__AF") >= 0 || f.indexOf("__AS") >= 0) {
-            if (keep && keep.length() > f.length()) {
+            if (keep && keep.length > f.length) {
               return;
             }
             keep = f;
