@@ -161,6 +161,7 @@ function proc() {
 
       if (program.removeAllo) {
         var keep = null;
+        var sameName = true;
         files.forEach(function(f) {
           if (f.indexOf("__AF") >= 0 || f.indexOf("__AS") >= 0) {
             if (keep && keep.length > f.length) {
@@ -168,7 +169,14 @@ function proc() {
             }
             keep = f;
           }
+
+          if (path.basename(f) != path.basename(files[0])) {
+            sameName = false;
+          }
         });
+        if (!keep && sameName) {
+          keep = files[0];
+        }
 
         if (keep) {
           files.forEach(function(f) {
@@ -176,6 +184,12 @@ function proc() {
               return;
             }
             console.log("Remove " + f);
+            fs.unlink(f, function(error) {
+              if (error) {
+                console.log("Can not remove " + f + " : " + error);
+                return;
+              }
+            });
           });
         }
       }
