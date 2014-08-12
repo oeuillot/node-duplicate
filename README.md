@@ -1,7 +1,7 @@
 # node-duplicate
 
-A tool which removes duplicates resources.
-It uses the size and compute the SHA256 on first 1Mo to identify the same resources.
+A tool which searches and removes duplicates resources.
+It uses the size and compute a SHA256 (on first 1Mo) to identify the same resources.
 
 ## Help
 
