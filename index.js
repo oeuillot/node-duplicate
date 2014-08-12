@@ -15,7 +15,7 @@ var filesSHA1 = Async.queue(function(path, callback) {
 	var max = program.maxHashSize || maxHashSize;
 
 	var count = 0;
-	var s = fs.ReadStream(path);
+	var s = fs.createReadStream(path);
 	var closed = false;
 
 	function end() {
@@ -43,6 +43,11 @@ var filesSHA1 = Async.queue(function(path, callback) {
 			return callback(null);
 		});
 	}
+
+	s.on('error', function(error) {
+		console.log("Error: ", error);
+		return callback(null);
+	});
 
 	s.on('data', function(d) {
 		if (closed) {
@@ -79,13 +84,8 @@ var directories = Async.queue(function(directory, callback) {
 			var path = directory + Path.sep + file;
 
 			fs.lstat(path, function(error, stats) {
-
-				// console.log("Stat " + file + " " + stats);
 				if (error) {
-					if (error.code === "EACCES") {
-						console.log("Can not access to file: " + path);
-						return callback(null);
-					}
+					console.log("lstat " + file + " error : " + error);
 					return callback(error);
 				}
 
